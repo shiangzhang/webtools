@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>test clipboadData</title>
+        <script type="text/javascript">
+            var str="";
+            function clearData(){
+                document.getElementById("dataArea").value = "";
+            }
+            
+            function setDate(dataStr){
+                document.getElementById("dataArea").value = dataStr;
+            }
+            function setClipData(){
+                setDate(str);
+            }
+            function getClipboadData(event){
+                event.preventDefault();
+                str="";
+                if(event.clipboardData.items){
+                    var items = event.clipboardData.items;
+                    for (var i = 0; i < items.length; ++i) {
+                        if ( items[i].kind == 'file' && items[i].type.indexOf('image/') !== -1 ) {
+                            var blob = items[i].getAsFile();
+                            window.URL = window.URL || window.webkitURL;
+                            var blobUrl = window.URL.createObjectURL(blob);
+                            console.log(blobUrl);
+                            str = str + "\ntype:"+items[i].type+"\nurl:"+blobUrl;
+                        }else if ((items[i].kind == 'string') && (items[i].type.match('^text/plain'))) {
+                            items[i].getAsString(function(s){
+                                str = (str + "\ntype:text/plain\ndata:\n" + s + "\n");
+                            });
+                        }else if ((items[i].kind == 'string') && (items[i].type.match('^text/html'))) {
+                            items[i].getAsString(function(s){//异步的方法
+                                s = s.replace("<!--StartFragment-->","")
+                                s = s.replace("<!--EndFragment-->","")
+                                str = (str + "\ntype:text/html\ndata:\n" + s + "\n");
+                                console.log(str);
+                            });
+                        }else if ((items[i].kind == 'string') && (items[i].type.match('^uri-list'))) {
+                                items[i].getAsString(function(s){
+                                str = (str + "\ntype:uri-list\ndata:\n" + s + "\n");
+                            });
+                        }else if ((items[i].kind == 'string') && (items[i].type.match('^text/rtf'))) {
+                            items[i].getAsString(function(s){
+                                str = (str + "\ntype:text/rtf\ndata:\n" + s + "\n");
+                            });
+                        }else{
+                            str = (str + "\n不认识的类型,type:"+items[i].type+"\ndata:\n");
+                        }
+                    }
+                    
+                    setTimeout(setClipData,200);
+                }else{
+                    setDate("没有数据");
+                }
+            }
+            window.onload=function(){
+                document.getElementById("dataArea").addEventListener("paste",getClipboadData);
+            } 
+        </script>
+    </head>
+    <body style="padding:20px">
+        <button onclick="clearData()">清除数据</button>
+        说明:html数据会清除StartFragment和EndFragment
+        <br><br>
+        <textarea id="dataArea" rows="100" cols="80" style="word-break: break-all" placeholder="请尝试粘贴"></textarea>
+    </body>
+</html>

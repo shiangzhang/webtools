@@ -1,0 +1,213 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link href="css/calrate.css" rel="stylesheet" />
+        <title>实际利率计算</title>
+        <style>
+            .row {margin-top: 5px; margin-bottom: 15px;}
+            .btn {margin-left: 10px; margin-right: 10px;}
+        
+            .validator_error {  color:#FF0000;  }
+            .validator_valid {  color:#555555;  }
+        </style>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="js/finance.js"></script>
+        <script type="text/javascript">
+            function calrate(loanAmount,oneTimeAmt,repayment){
+
+                var periods = repayment.length;
+                console.log("loanAmount:",loanAmount,"repayment:",repayment);
+                var totalRepay = oneTimeAmt;//总还款金额
+                var totalLoanWithTime = 0;
+                for(var i=0;i<periods;i++){
+                    totalLoanWithTime += (loanAmount-totalRepay);//第一个月算是完整的(满本金)借款,砍头息另算
+                    totalRepay += repayment[i];
+                }
+                totalLoanWithTime /= 12;
+
+                var interest = totalRepay-loanAmount;//利息
+                var rate = (100*interest/totalLoanWithTime).toFixed(2);//名义利率
+                var nominalRate = (1200*interest/(loanAmount*periods)).toFixed(2);//实际利率
+
+                
+                $("#nominalRate").html(nominalRate+"%");
+                $("#realRate").html(rate+"%");
+                $("#totalInterest").html(interest.toFixed(2)+"元");
+                $("#repaymentAmt").html(totalRepay.toFixed(2)+"元");
+
+                console.log("periods:",periods,"interest:",interest,"rate:",rate,"nominalRate:",nominalRate);
+            }
+            function cal(){
+                var amt = $("#amt")[0].value;
+                var periods = $("#period")[0].value;
+                var oneTimeAmt = parseFloat($("#fee_one_time")[0].value);//砍头息
+                var interest = parseFloat($("#interest").val());
+                var interestArr = [];
+                for(var i=0;i<periods;i++){
+                    interestArr.push(interest);
+                }
+                
+                var borrowedPerMonth = amt/periods;
+                
+                $("#oneTimeInterest").html(oneTimeAmt.toFixed(2)+"元");
+                $("#borrowedPerMonth").html(borrowedPerMonth.toFixed(2)+"元");
+                $("#interestPerMonth").html((interest-borrowedPerMonth).toFixed(2)+"元");
+                $("#interestPerMonth").html((interest-amt/periods).toFixed(2)+"元");
+                $("#borrowedPerMonth").html(interest.toFixed(2)+"元");
+                calrate(amt,oneTimeAmt,interestArr);
+            }
+            $(document).ready(function(){
+                console.log("ready");
+                $("#btn_calc").click(cal);
+
+                calrate(120000,0,[600,600,600,600,600,600,600,600,600,600,600,120600]);
+            });
+        </script>
+    </head>
+    <body>
+            <form class="form form-horizontal" role="form" id="form1" novalidate="novalidate">
+
+                    <div class="row">
+                        <div class="text-center">
+                            <h3>分期实际年化利率计算器</h3>
+                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3 col-xs-12">
+                            <div class="row">
+                                <label for="amt" class="col-md-3 control-label">分期金额(元):</label>
+                                <div class="col-md-9">
+                                    <input type="text" value="120000" class="form-control validator_valid" id="amt" placeholder="输入分期金额" data-bind="value: amt" aria-required="true" aria-invalid="false">
+                                </div>
+                            </div>
+                
+                            <div class="row">
+                                <label for="period" class="col-md-3 control-label">分期期数:</label>
+                                <div class="col-md-9">
+                                    <input type="number" value="24" min="0" step="any" class="form-control validator_valid" id="period" placeholder="分期期数">
+                                </div>
+                            </div>
+                
+                            <div class="row">
+                                <label for="fee_one_time" class="col-md-3 control-label">一次性手续费金额(元):</label>
+                                <div class="col-md-9">
+                                    <input type="number" value="0" min="0" step="any" class="form-control validator_valid" id="fee_one_time" placeholder="输入一次手续费金额(元)">
+                                </div>
+                            </div>
+                
+                            <div class="row">
+                                <label for="interest" class="col-md-3 control-label">每期还款金额(元):</label>
+                                <div class="col-md-9">
+                                    <input type="number" value="5372" min="0" step="any" class="form-control validator_valid" id="interest" placeholder="每期还款金额(元)">
+                                </div>
+                            </div>
+                
+                            <div class="row">
+                                <div class="pull-right">
+                                    <a id="btn_calc" type="button" class="btn btn-success has-spinner">
+                                        <i class="fa fa-spinner fa-spin"></i>&nbsp;计算
+                                    </a>
+                                </div>
+                            </div>
+                
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">计算结果</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="container-fluid1">
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4">名义年利率:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="nominalRate">0%</span>
+                                            </div>
+                                        </div>
+                
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4"><strong>实际年利率:</strong></label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="realRate" style="font-weight: bold;color: #FF0000">0%</span>
+                                            </div>
+                                        </div>
+                
+                                        <hr>
+                                        <div class="row" style="display: none;">
+                                            <label class="col-md-3 col-xs-4">一次性利息:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="oneTimeInterest">0.00元</span>
+                                            </div>
+                                        </div>
+                
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4">每月还本金:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="borrowedPerMonth">0.00元</span>
+                                            </div>
+                                        </div>
+                
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4">每月还利息:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="interestPerMonth">0.00元</span>
+                                            </div>
+                                        </div>
+                
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4">每月还款额:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="borrowedPerMonth">0.00元</span>
+                                            </div>
+                                        </div>
+                
+                                        <hr>
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4">总还款利息:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="totalInterest">0.00元</span>
+                                            </div>
+                                        </div>
+                
+                                        <div class="row">
+                                            <label class="col-md-3 col-xs-4">总还款金额:</label>
+                                            <div class="col-md-9 col-xs-8">
+                                                <span class="pull-right" id="repaymentAmt">0.00元</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                </div>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 col-xs-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">分期小常识</h3>
+                                </div>
+                                <div class="panel-body" style="line-height: 27px;">
+                                    <span>银行的分期产品，一句话来说：就是坑!</span><br><br>
+                
+                                    <span>先说分期的每期手续费。以借款1万1年为例，如每期手续费0.6%，12个月那么就相当于7.2%的利率，银行蛮良心啊。但是等一等，每个月的本金都会减少，
+                                        为什么利息却一直以1万来算，最后一期只剩下833.33的本金，手续费却仍然是1万的0.6%按60收。总体算下来，这可是13.29%的年化利率！
+                                    </span>
+                                    <span>
+                                        <b>真正的年化利率应该是指借1万,等1年后计算利息，本息一起还,利息除本金得到年化利率。而一般的做法都是按月还，要知道我们每一个月还的利息实际应该也要算做"借的钱"变少了。</b></span><br><br>
+                
+                                    <span>现在不少银行降低了每期手续费,但加收一笔一次性手续费。这其实就是古老的高利贷当中的"砍头息",
+                                        一早就降低占用的本金金额,但利息却一分都不少的按"砍头"之前的本金计算。这类一次性手续费比分期手续费的年化利率更高，也更隐蔽。</span><br><br>
+                
+                                    <span>话又说回来，虽然是坑，总比高利贷强吧.</span>
+                                </div>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                
+                </form>
+    </body>
+</html>

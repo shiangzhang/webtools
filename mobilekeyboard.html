@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>键盘高度</title>
+    <style type="text/css">
+        body{
+            font-size: 40px;
+        }
+        .nodisplay{
+            width: 200px;
+            height: 50px;
+            margin-bottom: 0px;
+            border-color: red;
+            border-style: solid;
+            position:absolute;
+            bottom:0px;
+        }
+    </style>
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        var myinput;
+        function showLoction() {
+            let y = 0;
+            if(typeof myinput !== "undefined"){
+                y=myinput[0].offsetTop;
+                var text = "键盘高度："+y;
+                $('#keyboardloctiondata').text(text);
+            }
+
+        }
+
+        function setFocus() {
+            myinput = $('#nodisplayinputdiv');
+            myinput.offset({top: $(window).height(),left:0});
+            $('#nodisplayinput').focus();
+            setTimeout(showLoction,200);
+        }
+    </script>
+</head>
+<body>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+<div id="keyboardloctiondata">键盘高度</div>
+<button onclick="setFocus()" style="font-size: 40px" value="test">设置Focus</button>
+<br>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+aaaa
+<br/>
+bbb
+<br/>
+<div class="nodisplay" id="nodisplayinputdiv">
+    nodisplayinputdiv
+    <input type="text" id="nodisplayinput">
+</div>
+</body>
+</html>
