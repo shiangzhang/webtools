@@ -30,11 +30,6 @@
 　　            var selectedText = selectionObj.toString();
                 selectionObj.deleteFromDocument(); //清除选择的内容
                 var r = selectionObj.getRangeAt(0); //即使已经执行了deleteFromDocument(), 这个函数仍然返回一个有效对象.
-                var selFrag = r.cloneContents(); //克隆选择的内容
-                var frag = selFrag.childNodes; //如果执行了deleteFromDocument(), 这个数组长度将会是 0 
-                for (var i = 0; i < frag.length; i++) {
-                    alert(frag[i].nodeName); //枚举选择的对象
-                }
                 var span = document.createElement('span'); //生成一个插入对象
                 span.innerText = selectedText; //设置这个对象的内容
                 $(span).css("font-style", "italic");
