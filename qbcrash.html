@@ -15,11 +15,39 @@
                 var timeoutRt = setTimeout(setTimeoutSpan,50);
                 document.getElementById("timeoutspan").innerText = timeoutRt;
             }
+            function setTimeoutSpan2(){
+                var timeoutRt = setTimeout(setTimeoutSpan2,50);
+                document.getElementById("timeoutspan2").innerText = timeoutRt;
+            }
+            function setTimeoutSpan3(){
+                var timeoutRt = setTimeout(setTimeoutSpan3,50);
+                document.getElementById("timeoutspan3").innerText = timeoutRt;
+            }
+            function setTimeoutSpan4(){
+                var timeoutRt = setTimeout(setTimeoutSpan4,50);
+                document.getElementById("timeoutspan4").innerText = timeoutRt;
+            }
+            function setTimeoutSpan5(){
+                var timeoutRt = setTimeout(setTimeoutSpan5,50);
+                document.getElementById("timeoutspan5").innerText = timeoutRt;
+            }
 
             setTimeout(setTimeoutSpan,500);
+            setTimeout(setTimeoutSpan2,500);
+            setTimeout(setTimeoutSpan3,500);
+            setTimeout(setTimeoutSpan4,500);
+            setTimeout(setTimeoutSpan5,500);
         </script>
     </head>
     <body>
         <span id="timeoutspan">0</span>
+        <br/>
+        <span id="timeoutspan2">0</span>
+        <br/>
+        <span id="timeoutspan3">0</span>
+        <br/>
+        <span id="timeoutspan4">0</span>
+        <br/>
+        <span id="timeoutspan5">0</span>
     </body>
 </html>
