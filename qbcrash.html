@@ -9,7 +9,7 @@
                 font-size:16pt;
             }
         </style>
-        
+        <script type="text/javascript" src="./js/jquery-3.3.1.min.js"></script>
         <script type="text/javascript">
             function setTimeoutSpan(){
                 var timeoutRt = setTimeout(setTimeoutSpan,50);
@@ -37,6 +37,23 @@
             setTimeout(setTimeoutSpan3,500);
             setTimeout(setTimeoutSpan4,500);
             setTimeout(setTimeoutSpan5,500);
+            var ws;
+            function sendMessage(){
+                ws.send("client time:" + new Date().getTime());
+                setTimeout(sendMessage,10);
+            }
+            function conn(){
+                ws = new WebSocket("ws://localhost:8181");
+                ws.onopen = function(e){
+                    console.log('Connection to server opened');
+                    sendMessage();
+                }
+                ws.onmessage = function(message){
+                    $("#wstext").text(message.data);
+                }
+            }
+
+            $(document).ready(conn);
         </script>
     </head>
     <body>
@@ -49,5 +66,7 @@
         <span id="timeoutspan4">0</span>
         <br/>
         <span id="timeoutspan5">0</span>
+        <br/>
+        <span id="wstext">0</span>
     </body>
 </html>
