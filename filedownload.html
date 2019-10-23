@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>文件下载验证</title>
+        <style type='text/css'>
+            body{
+                padding:50px;
+                font-size:16pt;
+            }
+        </style>
+      <script type="text/javascript" src="./js/jquery-3.3.1.min.js"></script>
+      <script type="text/javascript">
+      function downloadFun2(){
+          window.open("./fonts/simsun.ttc");
+      }
+      function downloadFun3(){
+          var form = $("<form method='get' target='_blank'></form>");
+          form.attr("action","./fonts/simsun.ttc");
+          $(document.body).append(form);
+          //提交表单，实现下载
+          form.submit();
+      }
+      $(document).ready(function(){
+        $("#downloadspan2").click(downloadFun2);
+        $("#downloadspan3").click(downloadFun3);
+      });
+      </script>
+    </head>
+    <body>
+        <a href="./fonts/simsun.ttc" download="test.ttc">下载一个文件1</a>
+        <br/>
+        <span id="downloadspan2" style="color: blue;text-decoration:underline;">点击下载一个文件2</span>
+        <br/>
+        <span id="downloadspan3" style="color: blue;text-decoration:underline;">点击下载一个文件3</span>
+       
+    </body>
+</html>
