@@ -25,6 +25,7 @@
         </style>
         <script type="text/javascript">
             wx.ready(function () {
+                alert('wx.ready');
                 wx.onMenuShareAppMessage({
                     title: "腾讯文档",
                     desc: "腾讯文档-在线文档",
@@ -34,6 +35,7 @@
                         alert('分享成功');
                     },
                     cancel: function () {
+                        alert('分享失败');
                     }
                 });
 
@@ -46,6 +48,7 @@
                         alert('分享成功');
                     },
                     cancel: function () {
+                        alert('分享失败');
                     }
                 });
             });
