@@ -26,20 +26,32 @@
         <script type="text/javascript">
             wx.onMenuShareAppMessage({
                 title: "腾讯文档",
-            desc: "腾讯文档-在线文档",
-            link: "https://docs.qq.com",
-            imgUrl: "http://sqimg.qq.com/qq_product_operations/tencent-doc/word_150x150.png",
-            success: function () {
-            alert('分享成功');
-            },
-            cancel: function () {
-            }
+                desc: "腾讯文档-在线文档",
+                link: "https://docs.qq.com",
+                imgUrl: "http://sqimg.qq.com/qq_product_operations/tencent-doc/word_150x150.png",
+                success: function () {
+                    alert('分享成功');
+                },
+                cancel: function () {
+                }
+            });
+
+            wx.onMenuShareQQ({
+                title: "腾讯文档",
+                desc: "腾讯文档-在线文档",
+                link: "https://docs.qq.com",
+                imgUrl: "http://sqimg.qq.com/qq_product_operations/tencent-doc/word_150x150.png",
+                success: function () {
+                    alert('分享成功');
+                },
+                cancel: function () {
+                }
             });
         </script>
       
     </head>
     <body>
-       分享摘要信息验证
+       分享摘要信息验证1
        
     </body>
 </html>
