@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>复制粘贴调试</title>
+        <script type="text/javascript" src="js/utils.js"></script>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript">
+
+            function onCopyByCommandListener(e){
+                console.log("onCopyByCommandListener");
+                alert("onCopyByCommandListener"+e.clipboardData);
+                var clipboardData = e.clipboardData;
+                clipboardData.setData('text/html', "<div style=\"color: red;\">div内容区div内容区div内容区div内容区</div>");
+                clipboardData.setData('text/plain', "plain文本");
+                e.preventDefault();
+            }
+
+            function onCutByCommandListener(e){
+                console.log("onCutByCommandListener");
+                alert("onCutByCommandListener");
+            }
+            function addCopyEventListener(){
+                document.addEventListener('cut', onCutByCommandListener);
+                document.addEventListener('copy', onCopyByCommandListener);
+            }
+            function setDivContentSelect(){
+                var textarea = document.createElement('textarea');
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.value = ' ';
+
+                var range = document.createRange();
+                range.selectNode(textarea);
+
+                var selection = window.getSelection();
+                if (selection) {
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }else{
+                    alert("setDivContentSelect，window selection is null");
+                }
+                alert("setDivContentSelect");
+            }
+
+            function documentRread(){
+                setDivContentSelect();
+            }
+            (function init(){
+                addCopyEventListener();
+                alert("isWeWork:"+isWeWork()+",isSafari:"+isSafari()+",isMobile:"+isMobile());
+                setDivContentSelect();
+                //$(document).ready(documentRread);
+            })();
+        </script>
+    </head>
+    <body>
+        <div id="editablediv" style="display: none;">
+            editablediveditablediveditablediveditablediveditablediv
+        </div>
+        <div id="editablediv2" style="display: none;">
+            editablediveditablediveditablediveditablediveditablediv
+        </div>
+        <div style="color: red;">div内容区div内容区div内容区div内容区
+            <br/>
+            div内容区div内容区div内容区div内容区
+        </div>
+        <input type="text" value="input内容input内容input内容input内容input内容">
+        <p><b>内容粘贴区</b></p>
+        <textarea cols="50" rows="10">
+
+        </textarea>
+    </body>
+</html>
