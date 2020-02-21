@@ -1,7 +1,9 @@
 function isWeWork() {
     return /(wxwork)/i.test(navigator.userAgent);
 }
-
+function isWeWorkMacOrWin() {
+    return /(wxwork)/i.test(navigator.userAgent) && /(Windows)|(Macintosh)/i.test(navigator.userAgent);
+}
 function isSafari() {
     return /safari/i.test(navigator.userAgent);
 }
