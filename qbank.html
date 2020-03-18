@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <script type="text/javascript">
+            var base64Ua = btoa(navigator.userAgent);
+            var map = new Map();
+            var mostChar = {num:0,char:''};
+            for(p of base64Ua) {
+                if (!map[p] ++) {
+                    map[p] = 1;
+                }
+                if (map[p]>mostChar.num) {
+                    mostChar.num = map[p];
+                    mostChar.char = p;
+                }
+            }
+            console.log(mostChar);
+        </script>
+    </head>
+</html>
