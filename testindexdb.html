@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>IndexDb</title>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript">
+            var isWritting = false;
+            var db;
+            function write5MData(){
+                console.log("write5MData");
+                if(db){
+
+                }
+            }
+            var writeInterval = 0;
+            function startOrStop(){
+                if(isWritting){
+                    isWritting = false;
+                    console.log("stop");
+                    $("#startOrStopBtn").html("开始写数据")
+                    if(writeInterval){
+                        clearInterval(writeInterval);
+                        writeInterval = 0;
+                    }
+                } else {
+                    isWritting = true;
+                    console.log("start");
+                    $("#startOrStopBtn").html("停止写数据");
+                    writeInterval = setInterval(write5MData,1000);
+                }
+            }
+
+            function clearData() {
+                console.log("clearData");
+            }
+
+            function openDb(){
+                var openRequest = indexedDB.open("testDb",1);
+                openRequest.onsuccess = function(event){
+                    console.log("open db success");
+                    db = event.result;
+                }
+                openRequest.onerror = function(){
+                    console.log("open db error");
+                }
+                openRequest.onupgradeneeded = function(){
+                    console.log("open db upgradeneeded");
+                }
+            }
+            $(document).ready(function(){
+                $("#startOrStopBtn").click(startOrStop);
+                $("#clearBtn").click(clearData);
+                openDb();
+            });
+        </script>
+    </head>
+    <body>
+
+        <button id="startOrStopBtn">开始写数据</button>
+        <button id="clearBtn">清除测试数据</button>
+    </body>
+</html>
