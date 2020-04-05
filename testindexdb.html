@@ -7,11 +7,23 @@
         <script type="text/javascript">
             var isWritting = false;
             var db;
+            var personTable;
             function write5MData(){
                 console.log("write5MData");
                 if(db){
-
+                    var transaction = db.transaction(['person'],'readwrite');
+                    var objectStore = transaction.objectStore('person');
+                    var addReq = objectStore.add({name: '张三',data:'dfdsfdsfasfdsafasdfasdfasdfasfdsf'});
+                    addReq.onsuccess = function(event) {
+                        console.log("write data success");
+                    }
+                    addReq.onerror = function(event) {
+                        console.log("write data error");
+                    }
+                } else {
+                    console.log("db is null");
                 }
+
             }
             var writeInterval = 0;
             function startOrStop(){
@@ -35,11 +47,22 @@
                 console.log("clearData");
             }
 
+            function createTableIfNotExist(){
+                if(!db) {
+                    console.log("db not opened");
+                }
+                if(!db.objectStoreNames.contains('person')) {
+                    personTable = db.creatObjectStore('person',{
+                        keyPath: 'id',
+                        autoIncrement: true,
+                        });
+                }
+            }
             function openDb(){
                 var openRequest = indexedDB.open("testDb",1);
                 openRequest.onsuccess = function(event){
                     console.log("open db success");
-                    db = event.result;
+                    db = openRequest.result;
                 }
                 openRequest.onerror = function(){
                     console.log("open db error");
