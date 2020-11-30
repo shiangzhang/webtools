@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>验证全屏</title>
+        <script type="text/javascript">
+            
+            function go2FullScreen(){
+                console.log("go2FullScreen");
+                const videoDom = document.documentElement;
+                if(videoDom.webkitRequestFullScreen){
+                    console.log("webkitRequestFullScreen");
+                    return videoDom.webkitRequestFullScreen();
+                }else if(videoDom.requestFullscreen){
+                    console.log("requestFullscreen");
+                    return videoDom.requestFullscreen();
+                }else if(videoDom.mozRequestFullScreen){
+                    console.log("mozRequestFullScreen");
+                    return videoDom.mozRequestFullScreen();
+                }else{
+                    console.log("msRequestFullscreen");
+                    return videoDom.msRequestFullscreen();
+                }
+            }
+        </script>
+    </head>
+    <body style="font-size: 50px;">
+        验证全屏<br>
+        <br>
+        验证全屏
+        <button onclick="go2FullScreen()">全屏</button>
+    </body>
+</html>
