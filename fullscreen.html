@@ -7,19 +7,20 @@
             
             function go2FullScreen(){
                 console.log("go2FullScreen");
+                let fullscreenOptions = { navigationUI: "hiden" };
                 const videoDom = document.documentElement;
-                if(videoDom.webkitRequestFullScreen){
-                    console.log("webkitRequestFullScreen");
-                    return videoDom.webkitRequestFullScreen();
-                }else if(videoDom.requestFullscreen){
+                if(videoDom.requestFullscreen){
                     console.log("requestFullscreen");
-                    return videoDom.requestFullscreen();
+                    return videoDom.requestFullscreen(fullscreenOptions);
+                }else if(videoDom.webkitRequestFullScreen){
+                    console.log("webkitRequestFullScreen");
+                    return videoDom.webkitRequestFullScreen(fullscreenOptions);
                 }else if(videoDom.mozRequestFullScreen){
                     console.log("mozRequestFullScreen");
-                    return videoDom.mozRequestFullScreen();
+                    return videoDom.mozRequestFullScreen(fullscreenOptions);
                 }else{
                     console.log("msRequestFullscreen");
-                    return videoDom.msRequestFullscreen();
+                    return videoDom.msRequestFullscreen(fullscreenOptions);
                 }
             }
         </script>
