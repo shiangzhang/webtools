@@ -48,8 +48,8 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'black';
             ctx.font = `${20 * window.devicePixelRatio}pt Arial`;
-            ctx.fillText('\\/|!hello world', 0, 40);
-            ctx.fillText('一二三四五六七八九十', 0, 100);
+            ctx.fillText('\\/|!hello world', 0, 20 * window.devicePixelRatio);
+            ctx.fillText('一二三四五六七八九十', 0, 20 + 40 * window.devicePixelRatio);
         }
         $(document).ready(()=>{
             const a = document.getElementById('divA');
