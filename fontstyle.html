@@ -38,7 +38,7 @@
             let canvas = document.createElement('canvas');
             const width = container.clientWidth;
             canvas.style.width = `${width}px`;
-            const height = 40;
+            const height = 80;
             canvas.style.height = `${height}px`;
             canvas.width = Math.floor(width * window.devicePixelRatio);
             canvas.height = Math.floor(height * window.devicePixelRatio);
@@ -47,8 +47,9 @@
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'black';
-            ctx.font = '20pt Arial';
-            ctx.fillText('\\/|!hello world', 0, height / 2);
+            ctx.font = '40pt Arial';
+            ctx.fillText('\\/|!hello world', 0, 40);
+            ctx.fillText('一二三四五六七八九十', 0, 100);
         }
         $(document).ready(()=>{
             const a = document.getElementById('divA');
