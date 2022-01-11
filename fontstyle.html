@@ -12,6 +12,7 @@
 
         div {
             position: float;
+            font-family: 微软雅黑;
             float: left;
             font-size: 20pt;
             border: 1px solid blue;
@@ -47,7 +48,7 @@
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'black';
-            ctx.font = `${20 * window.devicePixelRatio}pt Arial`;
+            ctx.font = `${20 * window.devicePixelRatio}pt 微软雅黑`;
             ctx.fillText('\\/|!hello world', 0, 20 * window.devicePixelRatio);
             ctx.fillText('一二三四五六七八九十', 0, 20 + 40 * window.devicePixelRatio);
         }
