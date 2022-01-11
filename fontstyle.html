@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>字体样式验证</title>
+    <script type="text/javascript" src="./js/jquery-3.3.1.min.js"></script>
+    <style>
+        canvas {
+            border: 1px solid green;
+        }
+
+        div {
+            position: float;
+            float: left;
+            font-size: 20pt;
+            border: 1px solid blue;
+        }
+
+        #a {
+            -webkit-font-smoothing: auto;
+        }
+
+        #b {
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #c {
+            -webkit-font-smoothing: subpixel-antialiased;
+        }
+
+        #d {
+            -webkit--webkit-font-smoothing: none;
+        }
+    </style>
+    <script type="text/javascript">
+        function add(container) {
+            let canvas = document.createElement('canvas');
+            const width = container.clientWidth;
+            canvas.style.width = `${width}px`;
+            const height = 40;
+            canvas.style.height = `${height}px`;
+            canvas.width = Math.floor(width * window.devicePixelRatio);
+            canvas.height = Math.floor(height * window.devicePixelRatio);
+            container.append(canvas);
+            let ctx = canvas.getContext('2d', { alpha: false });
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.font = '20pt Arial';
+            ctx.fillText('\\/|!hello world', 0, height / 2);
+        }
+        $(document).ready(()=>{
+            const a = document.getElementById('divA');
+            const b = document.getElementById('divB');
+            const c = document.getElementById('divC');
+            const d = document.getElementById('divD');
+            add(a);
+            add(b);
+            add(c);
+            add(d);
+        });
+        
+    </script>
+</head>
+
+<body>
+    <div id="divA">
+        (auto)<br>
+        ?????????<br>
+        |||||||||<br>
+        IIIIIIIII<br>
+        lllllllll<br>
+        /////////<br>
+    </div>
+    <div id="divB">
+        (antialiased)<br>
+        ?????????<br>
+        |||||||||<br>
+        IIIIIIIII<br>
+        lllllllll<br>
+        /////////<br>
+    </div>
+    <div id="divC">
+        (subpixel)<br>
+        ?????????<br>
+        |||||||||<br>
+        IIIIIIIII<br>
+        lllllllll<br>
+        /////////<br>
+    </div>
+    <div id="divD">
+        (none)<br>
+        ?????????<br>
+        |||||||||<br>
+        IIIIIIIII<br>
+        lllllllll<br>
+        /////////<br>
+    </div>
+</body>
+
+</html>
