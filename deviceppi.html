@@ -32,6 +32,10 @@
     const xppi = testDiv.clientWidth;
     const yppi = testDiv.clientHeight;
     const ppiText = document.querySelector("#ppi-text");
-    ppiText.textContent = `xppi:${xppi},yppi:${yppi}`;
+    let windowDPI = "";
+    if (window.screen.deviceXDPI) {
+      windowPwindowDPI = `xppi:${window.screen.deviceXDPI},yppi:${window.screen.deviceYDPI}`;
+    }
+    ppiText.textContent = `xppi:${xppi},yppi:${yppi},and windowDPI:${windowDPI}`;
   </script>
 </html>
