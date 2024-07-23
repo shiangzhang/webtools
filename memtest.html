@@ -4,11 +4,24 @@
     <title>内存占用测试</title>
     <script type="text/javascript">
       const mem = new Array();
+
+      function showMemInfo() {
+        document.getElementById("mem").innerHTML =
+          "JS分配内存：" +
+          mem.length * 100 +
+          "M,总占用:" +
+          (window.performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) +
+          "M";
+      }
       function addMem() {
         mem.push(new Uint8Array(1024 * 1024 * 100).fill(1));
-        document.getElementById("mem").innerHTML =
-          "内存占用：" + mem.length * 100 + "M";
+        showMemInfo();
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("DOMContentLoaded");
+        showMemInfo();
+      });
     </script>
   </head>
   <body>
