@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>内存占用测试</title>
+    <script type="text/javascript">
+      const mem = new Array();
+      function addMem() {
+        mem.push(new Uint8Array(1024 * 1024 * 100).fill(1));
+        document.getElementById("mem").innerHTML =
+          "内存占用：" + mem.length * 100 + "M";
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="addMem()">添加内存</button>
+    <button onclick="mem.length = 0">清空内存</button>
+    <button onclick="mem.length = 0;window.location.reload()">
+      清空内存并刷新
+    </button>
+    <button onclick="window.location.reload()">刷新</button>
+    <div id="mem"></div>
+  </body>
+</html>
