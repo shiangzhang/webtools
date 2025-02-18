@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点击检测</title>
+    <style>
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .click-area {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        #result {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="click-area">点击这里</div>
+        <div id="result">等待点击...</div>
+        <div id="result">间隔 10 秒以上视为首次点击</div>
+    </div>
+    <script>
+        const clickArea = document.querySelector('.click-area');
+        const result = document.getElementById('result');
+        let lastClickTime = 0;
+
+        clickArea.addEventListener('click', (e) => {
+            const now = new Date();
+            const currentTime = now.getTime();
+            const timeStr = now.toISOString();
+            const timeDiff = currentTime - lastClickTime;
+            
+            // 如果间隔超过10秒，重置状态
+            if (timeDiff > 10000) {
+                result.textContent = '第一次点击,'+timeStr;
+            } else if (lastClickTime === 0) {
+                result.textContent = '第一次点击,'+timeStr;
+            } else {
+                result.textContent = `距离上次点击间隔: ${timeDiff} 毫秒,${ timeStr }`;
+            }
+            
+            lastClickTime = currentTime;
+        });
+
+        clickArea.addEventListener('dblclick', (e) => {
+            const now = new Date();
+            const timeStr = now.toISOString();
+            result.textContent = '双击事件触发！'+timeStr;
+        });
+    </script>
+</body>
+</html>
