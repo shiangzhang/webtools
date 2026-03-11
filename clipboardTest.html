@@ -1,68 +1,685 @@
-<html>
-    <head>
-        <title>test clipboadData</title>
-        <script type="text/javascript">
-            var str="";
-            function clearData(){
-                document.getElementById("dataArea").value = "";
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪贴板数据检测工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .paste-zone {
+            background: #fff;
+            border: 2px dashed #c0c4cc;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: text;
+            transition: all 0.25s ease;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .paste-zone:hover {
+            border-color: #409eff;
+            background: #f5f9ff;
+        }
+
+        .paste-zone.drag-over {
+            border-color: #67c23a;
+            background: #f0f9eb;
+            transform: scale(1.01);
+        }
+
+        .paste-zone-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+
+        .paste-zone-text {
+            font-size: 16px;
+            color: #909399;
+        }
+
+        .paste-zone-hint {
+            font-size: 12px;
+            color: #c0c4cc;
+            margin-top: 8px;
+        }
+
+        /* 隐藏的输入区域，用于捕获粘贴事件 */
+        .paste-zone textarea {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            cursor: text;
+            resize: none;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #fff;
+            color: #606266;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .btn:hover { border-color: #409eff; color: #409eff; }
+        .btn:active { transform: scale(0.97); }
+        .btn.primary { background: #409eff; color: #fff; border-color: #409eff; }
+        .btn.primary:hover { background: #66b1ff; }
+        .btn.danger { color: #f56c6c; border-color: #fbc4c4; }
+        .btn.danger:hover { background: #fef0f0; border-color: #f56c6c; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            border-radius: 10px;
+            background: #ecf5ff;
+            color: #409eff;
+            margin-left: auto;
+        }
+
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #ebeef5;
+            gap: 8px;
+        }
+
+        .result-type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .tag-image { background: #e6a23c; }
+        .tag-text { background: #409eff; }
+        .tag-html { background: #67c23a; }
+        .tag-rtf { background: #909399; }
+        .tag-uri { background: #f56c6c; }
+        .tag-unknown { background: #c0c4cc; }
+
+        .result-meta {
+            font-size: 12px;
+            color: #909399;
+        }
+
+        .result-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            color: #606266;
+            transition: all 0.2s;
+        }
+
+        .btn-sm:hover { border-color: #409eff; color: #409eff; }
+
+        .result-body {
+            padding: 16px;
+        }
+
+        .result-body pre {
+            background: #f5f7fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+        }
+
+        .result-body img {
+            max-width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ebeef5;
+        }
+
+        .image-info {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #909399;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #c0c4cc;
+        }
+
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 10px 24px;
+            background: #333;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 999;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .history-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #909399;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .paste-zone { padding: 32px 16px; }
+            h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>&#128203; 剪贴板数据检测工具</h1>
+        <p class="subtitle">粘贴或拖拽内容到下方区域，查看剪贴板中包含的所有数据类型和内容</p>
+
+        <div class="paste-zone" id="pasteZone">
+            <div class="paste-zone-icon">&#128196;</div>
+            <div class="paste-zone-text">点击此处，然后按 Ctrl+V / Cmd+V 或者鼠标右键粘贴</div>
+            <div class="paste-zone-hint">也支持拖拽文件或文本到此区域</div>
+            <textarea id="pasteInput" aria-label="粘贴输入区域"></textarea>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn danger" onclick="clearResults()">&#128465; 清除结果</button>
+            <button class="btn" onclick="copyAllResults()">&#128203; 复制所有结果</button>
+            <button class="btn" onclick="readFromClipboardAPI()">&#128196; 主动读取剪贴板</button>
+            <div class="history-indicator">
+                <span>已检测 <strong id="pasteCount">0</strong> 次</span>
+                <span class="badge" id="itemCount" style="display:none">0 项数据</span>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">&#128270;</div>
+                <div>还没有检测到任何数据，请尝试粘贴内容</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let pasteCount = 0;
+        let currentItems = [];
+
+        // ---- Toast 提示 ----
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2000);
+        }
+
+        // ---- 清除结果 ----
+        function clearResults() {
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">&#128270;</div>
+                    <div>还没有检测到任何数据，请尝试粘贴内容</div>
+                </div>`;
+            currentItems = [];
+            updateBadge();
+            showToast('已清除所有结果');
+        }
+
+        // ---- 更新统计 ----
+        function updateBadge() {
+            const badge = document.getElementById('itemCount');
+            const count = currentItems.length;
+            if (count > 0) {
+                badge.style.display = 'inline-block';
+                badge.textContent = count + ' 项数据';
+            } else {
+                badge.style.display = 'none';
             }
-            
-            function setDate(dataStr){
-                document.getElementById("dataArea").value = dataStr;
+        }
+
+        // ---- 复制文本到剪贴板 ----
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('已复制到剪贴板');
+            } catch (e) {
+                // fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('已复制到剪贴板');
             }
-            function setClipData(){
-                setDate(str);
+        }
+
+        // ---- 复制所有结果 ----
+        function copyAllResults() {
+            if (currentItems.length === 0) {
+                showToast('没有数据可复制');
+                return;
             }
-            function getClipboadData(event){
-                event.preventDefault();
-                str="";
-                if(event.clipboardData.items){
-                    var items = event.clipboardData.items;
-                    for (var i = 0; i < items.length; ++i) {
-                        if ( items[i].kind == 'file' && items[i].type.indexOf('image/') !== -1 ) {
-                            var blob = items[i].getAsFile();
-                            window.URL = window.URL || window.webkitURL;
-                            var blobUrl = window.URL.createObjectURL(blob);
-                            console.log(blobUrl);
-                            str = str + "\ntype:"+items[i].type+"\nurl:"+blobUrl;
-                        }else if ((items[i].kind == 'string') && (items[i].type.match('^text/plain'))) {
-                            items[i].getAsString(function(s){
-                                str = (str + "\ntype:text/plain\ndata:\n" + s + "\n");
-                            });
-                        }else if ((items[i].kind == 'string') && (items[i].type.match('^text/html'))) {
-                            items[i].getAsString(function(s){//异步的方法
-                                s = s.replace("<!--StartFragment-->","")
-                                s = s.replace("<!--EndFragment-->","")
-                                str = (str + "\ntype:text/html\ndata:\n" + s + "\n");
-                                console.log(str);
-                            });
-                        }else if ((items[i].kind == 'string') && (items[i].type.match('^uri-list'))) {
-                                items[i].getAsString(function(s){
-                                str = (str + "\ntype:uri-list\ndata:\n" + s + "\n");
-                            });
-                        }else if ((items[i].kind == 'string') && (items[i].type.match('^text/rtf'))) {
-                            items[i].getAsString(function(s){
-                                str = (str + "\ntype:text/rtf\ndata:\n" + s + "\n");
-                            });
-                        }else{
-                            str = (str + "kind:" + items[i].kind +"\n不认识的类型,type:"+items[i].type+"\ndata:\n");
-                        }
+            const text = currentItems.map((item, i) => {
+                let s = `--- 第 ${i + 1} 项 ---\n类型: ${item.type}\nKind: ${item.kind}\n`;
+                if (item.data) s += `数据:\n${item.data}\n`;
+                if (item.blobUrl) s += `Blob URL: ${item.blobUrl}\n`;
+                if (item.size) s += `大小: ${item.size}\n`;
+                return s;
+            }).join('\n');
+            copyText(text);
+        }
+
+        // ---- 格式化文件大小 ----
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        // ---- 获取类型标签样式 ----
+        function getTagClass(type) {
+            if (type.startsWith('image/')) return 'tag-image';
+            if (type === 'text/plain') return 'tag-text';
+            if (type === 'text/html') return 'tag-html';
+            if (type === 'text/rtf') return 'tag-rtf';
+            if (type.includes('uri')) return 'tag-uri';
+            return 'tag-unknown';
+        }
+
+        function getTypeName(type) {
+            const map = {
+                'text/plain': '纯文本',
+                'text/html': 'HTML',
+                'text/rtf': 'RTF 富文本',
+                'text/uri-list': 'URI 链接',
+            };
+            if (type.startsWith('image/')) return '图片 (' + type.split('/')[1].toUpperCase() + ')';
+            return map[type] || type;
+        }
+
+        // ---- 创建结果卡片 ----
+        function createCard(item, index) {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            const tagClass = getTagClass(item.type);
+            const typeName = getTypeName(item.type);
+
+            let metaInfo = `Kind: ${item.kind}`;
+            if (item.size) metaInfo += ` | 大小: ${item.size}`;
+
+            let bodyContent = '';
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                bodyContent = `
+                    <img src="${item.blobUrl}" alt="粘贴的图片" onload="this.nextElementSibling.textContent='尺寸: ' + this.naturalWidth + ' × ' + this.naturalHeight + 'px'">
+                    <div class="image-info"></div>`;
+            } else if (item.data !== undefined) {
+                const escaped = item.data
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                bodyContent = `<pre>${escaped}</pre>`;
+            } else {
+                bodyContent = `<pre>（数据加载中...）</pre>`;
+            }
+
+            let actionBtn = '';
+            if (item.data) {
+                actionBtn = `<button class="btn-sm" onclick="copyText(currentItems[${index}].data)">复制</button>`;
+            }
+            if (item.blobUrl) {
+                actionBtn += `<a class="btn-sm" href="${item.blobUrl}" download style="text-decoration:none">下载</a>`;
+            }
+
+            card.innerHTML = `
+                <div class="result-header">
+                    <span class="result-type-tag ${tagClass}">${typeName}</span>
+                    <span class="result-meta">${metaInfo}</span>
+                    <div class="result-actions">${actionBtn}</div>
+                </div>
+                <div class="result-body">${bodyContent}</div>`;
+
+            return card;
+        }
+
+        // ---- 渲染所有结果 ----
+        function renderResults() {
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+
+            if (currentItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-state-icon">&#128270;</div>
+                        <div>还没有检测到任何数据，请尝试粘贴内容</div>
+                    </div>`;
+                return;
+            }
+
+            currentItems.forEach((item, i) => {
+                container.appendChild(createCard(item, i));
+            });
+            updateBadge();
+        }
+
+        // ---- 处理剪贴板数据 ----
+        function processClipboardData(clipboardData) {
+            if (!clipboardData || !clipboardData.items || clipboardData.items.length === 0) {
+                showToast('剪贴板中没有检测到数据');
+                return;
+            }
+
+            pasteCount++;
+            document.getElementById('pasteCount').textContent = pasteCount;
+            currentItems = [];
+
+            const items = clipboardData.items;
+            let pendingAsync = 0;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const record = {
+                    kind: item.kind,
+                    type: item.type,
+                    data: undefined,
+                    blobUrl: undefined,
+                    size: undefined,
+                };
+
+                if (item.kind === 'file') {
+                    const blob = item.getAsFile();
+                    if (blob) {
+                        window.URL = window.URL || window.webkitURL;
+                        record.blobUrl = window.URL.createObjectURL(blob);
+                        record.size = formatSize(blob.size);
                     }
-                    
-                    setTimeout(setClipData,200);
-                }else{
-                    setDate("没有数据");
+                } else if (item.kind === 'string') {
+                    pendingAsync++;
+                    (function(rec) {
+                        item.getAsString(function(s) {
+                            // 对 HTML 类型，清理 Fragment 标记
+                            if (rec.type === 'text/html') {
+                                s = s.replace(/<!--StartFragment-->/g, '');
+                                s = s.replace(/<!--EndFragment-->/g, '');
+                            }
+                            rec.data = s;
+                            rec.size = formatSize(new Blob([s]).size);
+                            pendingAsync--;
+                            if (pendingAsync === 0) {
+                                renderResults();
+                            }
+                        });
+                    })(record);
+                }
+
+                currentItems.push(record);
+            }
+
+            // 如果没有异步操作，直接渲染
+            if (pendingAsync === 0) {
+                renderResults();
+            } else {
+                // 先渲染一次（显示加载中），异步完成后会再渲染
+                renderResults();
+            }
+
+            // 安全兜底：最多等 2 秒强制刷新
+            setTimeout(() => {
+                renderResults();
+            }, 2000);
+        }
+
+        // ---- 粘贴事件 ----
+        function handlePaste(event) {
+            event.preventDefault();
+            processClipboardData(event.clipboardData);
+        }
+
+        // ---- 主动读取剪贴板 (Clipboard API) ----
+        async function readFromClipboardAPI() {
+            if (!navigator.clipboard || !navigator.clipboard.read) {
+                showToast('当前浏览器不支持 Clipboard API 主动读取');
+                return;
+            }
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                pasteCount++;
+                document.getElementById('pasteCount').textContent = pasteCount;
+                currentItems = [];
+
+                for (const clipItem of clipboardItems) {
+                    for (const type of clipItem.types) {
+                        const blob = await clipItem.getType(type);
+                        const record = {
+                            kind: type.startsWith('image/') ? 'file' : 'string',
+                            type: type,
+                            data: undefined,
+                            blobUrl: undefined,
+                            size: formatSize(blob.size),
+                        };
+
+                        if (type.startsWith('image/')) {
+                            record.blobUrl = window.URL.createObjectURL(blob);
+                        } else {
+                            let text = await blob.text();
+                            if (type === 'text/html') {
+                                text = text.replace(/<!--StartFragment-->/g, '');
+                                text = text.replace(/<!--EndFragment-->/g, '');
+                            }
+                            record.data = text;
+                        }
+                        currentItems.push(record);
+                    }
+                }
+
+                renderResults();
+
+                if (currentItems.length === 0) {
+                    showToast('剪贴板中没有检测到数据');
+                } else {
+                    showToast('成功读取 ' + currentItems.length + ' 项数据');
+                }
+            } catch (e) {
+                if (e.name === 'NotAllowedError') {
+                    showToast('请允许浏览器访问剪贴板权限');
+                } else {
+                    showToast('读取失败: ' + e.message);
+                    console.error(e);
                 }
             }
-            window.onload=function(){
-                document.getElementById("dataArea").addEventListener("paste",getClipboadData);
-            } 
-        </script>
-    </head>
-    <body style="padding:20px">
-        <button onclick="clearData()">清除数据</button>
-        说明:html数据会清除StartFragment和EndFragment
-        <br><br>
-        <textarea id="dataArea" rows="100" cols="80" style="word-break: break-all" placeholder="请尝试粘贴"></textarea>
-    </body>
+        }
+
+        // ---- 拖拽支持 ----
+        const pasteZone = document.getElementById('pasteZone');
+
+        pasteZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            pasteZone.classList.add('drag-over');
+        });
+
+        pasteZone.addEventListener('dragleave', function(e) {
+            pasteZone.classList.remove('drag-over');
+        });
+
+        pasteZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            pasteZone.classList.remove('drag-over');
+
+            if (!e.dataTransfer) {
+                showToast('未检测到拖拽数据');
+                return;
+            }
+
+            pasteCount++;
+            document.getElementById('pasteCount').textContent = pasteCount;
+            currentItems = [];
+
+            const dt = e.dataTransfer;
+
+            // 处理拖拽的文件
+            if (dt.files && dt.files.length > 0) {
+                for (let i = 0; i < dt.files.length; i++) {
+                    const file = dt.files[i];
+                    const record = {
+                        kind: 'file',
+                        type: file.type || 'application/octet-stream',
+                        data: undefined,
+                        blobUrl: window.URL.createObjectURL(file),
+                        size: formatSize(file.size),
+                    };
+
+                    // 如果是文本文件，尝试读取内容
+                    if (file.type.startsWith('text/') || file.type === 'application/json') {
+                        (function(rec, f) {
+                            const reader = new FileReader();
+                            reader.onload = function() {
+                                rec.data = reader.result;
+                                renderResults();
+                            };
+                            reader.readAsText(f);
+                        })(record, file);
+                    }
+
+                    currentItems.push(record);
+                }
+            }
+
+            // 处理拖拽的文本数据类型
+            if (dt.types) {
+                dt.types.forEach(function(type) {
+                    if (type === 'Files') return; // 已经处理过了
+                    const data = dt.getData(type);
+                    if (data) {
+                        currentItems.push({
+                            kind: 'string',
+                            type: type,
+                            data: data,
+                            blobUrl: undefined,
+                            size: formatSize(new Blob([data]).size),
+                        });
+                    }
+                });
+            }
+
+            renderResults();
+
+            if (currentItems.length === 0) {
+                showToast('未检测到有效数据');
+            } else {
+                showToast('检测到 ' + currentItems.length + ' 项拖拽数据');
+            }
+        });
+
+        // ---- 绑定粘贴事件 ----
+        document.getElementById('pasteInput').addEventListener('paste', handlePaste);
+
+        // 点击 paste zone 时聚焦到隐藏的 textarea
+        pasteZone.addEventListener('click', function() {
+            document.getElementById('pasteInput').focus();
+        });
+
+        // 也监听全局粘贴事件，让用户不必点击区域也能粘贴
+        document.addEventListener('paste', function(e) {
+            // 避免重复触发（如果焦点在 pasteInput 上，已经触发过了）
+            if (e.target.id === 'pasteInput') return;
+            e.preventDefault();
+            processClipboardData(e.clipboardData);
+        });
+    </script>
+</body>
 </html>
